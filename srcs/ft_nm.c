@@ -1,12 +1,10 @@
 #include "ft_nm.h"
 
 int			check_file(void *addr) {
-//	uint8_t magic[4] = {ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3};
+	uint8_t magic[4] = {ELFMAG0, ELFMAG1, ELFMAG2, ELFMAG3};
 
-//	if memcmp(addr, magic, sizeof(magic)) {
-//		return (-1);
-//	}
-	(void)addr;
+	if (memcmp(addr, magic, sizeof(magic)))
+		return (-ERR_FORMAT);
 	return (0);
 }
 
