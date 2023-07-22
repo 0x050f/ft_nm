@@ -11,4 +11,7 @@
 
 # include "error.h"
 
+/* check.c */
+int			check_elf_header(void *addr, size_t size);
+
 #endif

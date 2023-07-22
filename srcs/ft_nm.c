@@ -1,30 +1,37 @@
 #include "ft_nm.h"
 
-int			check_file(void *addr, size_t size) {
+/*
+** Get EI_CLASS from ElfN_Ehdr, supposed header size has been verified using
+** check_header()
+*/
+uint8_t		ei_class(Elf32_Ehdr *header) {
+	return (header->e_ident[EI_CLASS]);
+}
+
+int			handle_elf32(void *addr, size_t size) {
+	Elf32_Ehdr *header;
+
+	header = addr;
+	(void)header;
+	(void)size;
+	return (0);
+}
+
+int			handle_elf64(void *addr, size_t size) {
 	Elf64_Ehdr *header;
 
-	if (size < sizeof(Elf64_Ehdr))
-		return (-ERR_FORMAT);
 	header = addr;
-	if (header->e_ident[EI_MAG0] != ELFMAG0 ||
-		header->e_ident[EI_MAG1] != ELFMAG1 ||
-		header->e_ident[EI_MAG2] != ELFMAG2 ||
-		header->e_ident[EI_MAG3] != ELFMAG3)
-		return (-ERR_FORMAT);
-	if (header->e_ident[EI_CLASS] == ELFCLASSNONE)
-		return (-ERR_FORMAT);
-	if (header->e_ident[EI_CLASS] == ELFCLASS32) {
-	}
-	if (header->e_ident[EI_CLASS] == ELFCLASS64) {
-	}
+	(void)header;
+	(void)size;
 	return (0);
 }
 
 int			process_file(char *filename) {
-	int			ret;
-	int			fd;
-	struct stat	statbuf;
-	void		*addr;
+	int				ret;
+	int				fd;
+	struct stat		statbuf;
+	uint8_t			arch_size;
+	void			*addr;
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1) {
@@ -46,9 +53,22 @@ int			process_file(char *filename) {
 	addr = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (addr == MAP_FAILED)
 		return (-ERR_ERRNO);
-	ret = check_file(addr, statbuf.st_size);
-	if (ret < 0)
+	// Check header MAGIC & EI_CLASS and sections/programs offset in header
+	ret = check_elf_header(addr, statbuf.st_size);
+	if (ret < 0) {
+		munmap(addr, statbuf.st_size);
 		return (ret);
+	}
+	arch_size = ei_class(addr);
+	// Handle ELF 64 or 32bits
+	if (arch_size == ELFCLASS32)
+		ret = handle_elf32(addr, statbuf.st_size);
+	else if (arch_size == ELFCLASS64)
+		ret = handle_elf64(addr, statbuf.st_size);
+	if (ret < 0) {
+		munmap(addr, statbuf.st_size);
+		return (ret);
+	}
 	if (munmap(addr, statbuf.st_size) == -1)
 		return (-ERR_ERRNO);
 	return (0);

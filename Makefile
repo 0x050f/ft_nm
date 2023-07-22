@@ -6,6 +6,7 @@ DIR_SRCS	=	./srcs/
 DIR_OBJS	=	./compiled_srcs/
 
 SRCS		=	ft_nm.c \
+				check.c \
 				error.c
 
 INCLUDES	=	ft_nm.h
