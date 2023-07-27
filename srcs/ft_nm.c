@@ -8,6 +8,62 @@ uint8_t		ei_class(Elf32_Ehdr *header) {
 	return (header->e_ident[EI_CLASS]);
 }
 
+Elf64_Shdr	*get_64section_by_index(
+	void	*addr,
+	size_t	size,
+	size_t	index
+) {
+	Elf64_Ehdr *header;
+
+	header = addr;
+	if (index >= header->e_shnum)
+		return (NULL);
+	if (header->e_shoff + header->e_shentsize * index > size)
+		return (NULL);
+	return ((void *)(addr + header->e_shoff + header->e_shentsize * index));
+}
+
+int			get_next_idx_64section_by_type(
+	void		*addr,
+	size_t		size,
+	size_t		from,
+	Elf64_Word	type
+) {
+	Elf64_Ehdr *header;
+	Elf64_Shdr *section;
+
+	header= addr;
+	for (size_t i = from; i < header->e_shnum; i++) {
+		if (header->e_shoff + header->e_shentsize * i > size)
+			return (-1);
+		section = (void *)(addr + header->e_shoff + header->e_shentsize * i);
+		if (section->sh_type == type)
+			return (i);
+	}
+	return (-1);
+}
+
+Elf64_Shdr	*get_64section_by_name(
+	void	*addr,
+	size_t	size,
+	char	*name
+) {
+	Elf64_Ehdr	*header;
+	Elf64_Shdr	*shstr, *section;
+
+	header = addr;
+	shstr = get_64section_by_index(addr, size, header->e_shstrndx);
+	for (size_t i = 0; i < header->e_shnum; i++) {
+		if (header->e_shoff + header->e_shentsize * i > size)
+			return (NULL);
+		section = (void *)(addr + header->e_shoff + header->e_shentsize * i);
+		if (shstr->sh_offset + section->sh_name < size &&
+			!strncmp(addr + shstr->sh_offset + section->sh_name, name, strlen(name) + 1))
+			return (section);
+	}
+	return (NULL);
+}
+
 int			handle_elf32(void *addr, size_t size) {
 	Elf32_Ehdr *header;
 
@@ -18,11 +74,32 @@ int			handle_elf32(void *addr, size_t size) {
 }
 
 int			handle_elf64(void *addr, size_t size) {
-	Elf64_Ehdr *header;
+	int			index;
+	Elf64_Shdr	*section, *tmp, *symstr;
+	Elf64_Sym	*symbol_table;
 
-	header = addr;
-	(void)header;
-	(void)size;
+	symstr = get_64section_by_name(addr, size, ".strtab");
+	if (symstr == NULL)
+		return (-1);
+	index = get_next_idx_64section_by_type(addr, size, 0, SHT_SYMTAB);
+	while (index >= 0) {
+		section = get_64section_by_index(addr, size, index);
+		if (!section)
+			return (-1);
+		size_t offset_symbol = 0;
+		while (offset_symbol < section->sh_size) {
+			symbol_table = addr + section->sh_offset + offset_symbol;
+			if (symbol_table->st_name != 0) {
+				tmp = get_64section_by_index(addr, size, symbol_table->st_shndx);
+				if (tmp != NULL) {
+					char *string = addr + symstr->sh_offset + symbol_table->st_name;
+					printf("%d - %s\n", tmp->sh_type, string);
+				}
+			}
+			offset_symbol += section->sh_entsize;
+		}
+		index = get_next_idx_64section_by_type(addr, size, index + 1, SHT_SYMTAB);
+	}
 	return (0);
 }
 
