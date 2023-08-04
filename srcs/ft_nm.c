@@ -64,6 +64,52 @@ Elf64_Shdr	*get_64section_by_name(
 	return (NULL);
 }
 
+/*
+              STT_NOTYPE
+              STT_OBJECT
+              STT_FUNC
+              STT_SECTION
+              STT_FILE
+              STT_LOPROC, STT_HIPROC
+              STB_LOCAL
+              STB_GLOBAL
+              STB_WEAK
+              STB_LOPROC, STB_HIPROC
+              ELF32_ST_BIND(info), ELF64_ST_BIND(info)
+              ELF32_ST_TYPE(info), ELF64_ST_TYPE(info)
+              ELF32_ST_INFO(bind, type), ELF64_ST_INFO(bind, type)
+*/
+
+void		print_64symbol(char *string, Elf64_Off offset, unsigned char bind, char *section_name) {
+	char symbol;
+
+	if (!offset)
+		symbol = 'U';
+	else if (!strncmp(".text", section_name, strlen(section_name) + 1) || !strncmp(".fini", section_name, strlen(section_name) + 1) || !strncmp(".init", section_name, strlen(section_name) + 1))
+		symbol = 'T';
+	else if (!strncmp(".bss", section_name, strlen(section_name) + 1))
+		symbol = 'B';
+	else if (!strncmp(".data", section_name, strlen(section_name) + 1) || !strncmp(".dynamic", section_name, strlen(section_name) + 1) || !strncmp(".got.plt", section_name, strlen(section_name) + 1))
+		symbol = 'D';
+	else if (!strncmp(".rodata", section_name, strlen(section_name) + 1) || !strncmp(".eh_frame_hdr", section_name, strlen(section_name) + 1))
+		symbol = 'R';
+	else {
+		printf("%s\n", section_name);
+		symbol = '?';
+	}
+	if (bind == STB_WEAK) {
+		if (offset)
+			symbol = 'W';
+		else
+			symbol = 'w';
+	} else if (bind != STB_GLOBAL && symbol >= 'A' && symbol <= 'Z')
+		symbol += 'a' - 'A';
+	if (!offset)
+		printf("%016c %c %s\n", ' ', symbol, string);
+	else
+		printf("%016llx %c %s\n", offset, symbol, string);
+}
+
 int			handle_elf32(void *addr, size_t size) {
 	Elf32_Ehdr *header;
 
@@ -75,10 +121,11 @@ int			handle_elf32(void *addr, size_t size) {
 
 int			handle_elf64(void *addr, size_t size) {
 	int			index;
-	Elf64_Shdr	*section, *tmp, *symstr;
+	Elf64_Shdr	*section, *tmp, *symstr, *shstr;
 	Elf64_Sym	*symbol_table;
 
 	symstr = get_64section_by_name(addr, size, ".strtab");
+	shstr = get_64section_by_name(addr, size, ".shstrtab");
 	if (symstr == NULL)
 		return (-1);
 	index = get_next_idx_64section_by_type(addr, size, 0, SHT_SYMTAB);
@@ -93,7 +140,8 @@ int			handle_elf64(void *addr, size_t size) {
 				tmp = get_64section_by_index(addr, size, symbol_table->st_shndx);
 				if (tmp != NULL) {
 					char *string = addr + symstr->sh_offset + symbol_table->st_name;
-					printf("%d - %s\n", tmp->sh_type, string);
+					char *section_name = addr + shstr->sh_offset + tmp->sh_name;
+					print_64symbol(string, symbol_table->st_value, ELF64_ST_BIND(symbol_table->st_info), section_name);
 				}
 			}
 			offset_symbol += section->sh_entsize;
