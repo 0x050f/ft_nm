@@ -7,7 +7,9 @@ DIR_OBJS	=	./compiled_srcs/
 
 SRCS		=	ft_nm.c \
 				check.c \
-				error.c
+				error.c \
+				64bits/section.c \
+				64bits/symbol.c
 
 INCLUDES	=	ft_nm.h
 
@@ -30,6 +32,7 @@ $(NAME):	$(OBJS) $(addprefix $(DIR_HEADERS), $(INCLUDES))
 $(OBJS):	| $(DIR_OBJS)
 
 $(DIR_OBJS)%.o:		$(DIR_SRCS)%.c Makefile
+					@mkdir -p $(dir $@)
 					$(CC) $(CC_FLAGS) -MMD -MP -I $(DIR_HEADERS) -c $< -o $@
 -include			$(DEPS)
 
