@@ -23,6 +23,6 @@ int			get_next_idx_64section_by_type(void *addr, size_t size, size_t from, Elf64
 void		print_64symbol(Elf64_Off offset, char symbol, char *string);
 char		*get_64symbol_name(void *addr, size_t size, Elf64_Sym *symbol_table);
 char		*get_64symbol_section_name(void *addr, size_t size, Elf64_Sym *symbol_table);
-char		get_64symbol_type(Elf64_Sym *symbol_table, char *section_name);
+char		get_64symbol_type(Elf64_Sym *symbol_table, Elf64_Shdr *section);
 
 #endif

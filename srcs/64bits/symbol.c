@@ -48,31 +48,40 @@ char		*get_64symbol_section_name(void *addr, size_t size, Elf64_Sym *symbol_tabl
 }
 
 /*
-** Get the symbol character representing the symbol_table using its section_name
+** Get the symbol character representing the symbol_table using its section
 */
-char		get_64symbol_type(Elf64_Sym *symbol_table, char *section_name) {
+char		get_64symbol_type(Elf64_Sym *symbol_table, Elf64_Shdr *section) {
 	char			symbol;
 
 	symbol = '?';
-	if (!symbol_table->st_value)
-		symbol = 'U';
-	else if (!strncmp(".text", section_name, strlen(section_name) + 1) || !strncmp(".fini", section_name, strlen(section_name) + 1) || !strncmp(".init", section_name, strlen(section_name) + 1))
-		symbol = 'T';
-	else if (!strncmp(".bss", section_name, strlen(section_name) + 1))
-		symbol = 'B';
-	else if (!strncmp(".data", section_name, strlen(section_name) + 1) || !strncmp(".dynamic", section_name, strlen(section_name) + 1) || !strncmp(".got.plt", section_name, strlen(section_name) + 1))
-		symbol = 'D';
-	else if (!strncmp(".rodata", section_name, strlen(section_name) + 1) || !strncmp(".eh_frame_hdr", section_name, strlen(section_name) + 1))
-		symbol = 'R';
-	else {
-		printf("%s\n", section_name);
-	}
-	if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK) {
-		if (symbol_table->st_value)
-			symbol = 'W';
-		else
+	if (ELF64_ST_BIND(symbol_table->st_info) == STB_GNU_UNIQUE)
+		symbol = 'u';
+	else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK) {
+		symbol = 'W';
+		if (symbol_table->st_shndx == SHN_UNDEF)
 			symbol = 'w';
-	} else if (ELF64_ST_BIND(symbol_table->st_info) != STB_GLOBAL && symbol >= 'A' && symbol <= 'Z')
+	} else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK && ELF64_ST_TYPE(symbol_table->st_info) == STT_OBJECT) {
+		symbol = 'V';
+		if (symbol_table->st_shndx == SHN_UNDEF)
+			symbol = 'v';
+	} else if (symbol_table->st_shndx == SHN_UNDEF)
+		symbol = 'U';
+	else if (symbol_table->st_shndx == SHN_ABS)
+		symbol = 'A';
+	else if (symbol_table->st_shndx == SHN_COMMON)
+		symbol = 'C';
+	else if (section->sh_type == SHT_NOBITS
+			&& section->sh_flags == (SHF_ALLOC | SHF_WRITE))
+		symbol = 'B';
+	else if (section->sh_type == SHT_DYNAMIC)
+		symbol = 'D';
+	else if (section->sh_flags == SHF_ALLOC)
+		symbol = 'R';
+	else if (section->sh_flags == (SHF_ALLOC | SHF_WRITE))
+		symbol = 'D';
+	else if (section->sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+		symbol = 'T';
+	if (ELF64_ST_BIND(symbol_table->st_info) == STB_LOCAL && symbol != '?')
 		symbol += 'a' - 'A';
 	return (symbol);
 }

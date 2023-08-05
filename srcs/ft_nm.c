@@ -20,8 +20,7 @@ int			handle_elf32(void *addr, size_t size) {
 int			handle_elf64(void *addr, size_t size) {
 	int			index;
 	char		*symbol_name;
-	char		*section_name;
-	Elf64_Shdr	*section;
+	Elf64_Shdr	*section, *tmp;
 	Elf64_Sym	*symbol_table;
 
 	index = get_next_idx_64section_by_type(addr, size, 0, SHT_SYMTAB);
@@ -33,12 +32,12 @@ int			handle_elf64(void *addr, size_t size) {
 		while (offset_symbol < section->sh_size) {
 			symbol_table = addr + section->sh_offset + offset_symbol;
 			if (symbol_table->st_name != 0) {
-				section_name = get_64symbol_section_name(addr, size, symbol_table);
-				if (section_name) {
-					symbol_name = get_64symbol_name(addr, size, symbol_table);
+				tmp = get_64section_by_index(addr, size, symbol_table->st_shndx);
+				symbol_name = get_64symbol_name(addr, size, symbol_table);
+				if (tmp && symbol_name) {
 					print_64symbol(
 						symbol_table->st_value,
-						get_64symbol_type(symbol_table, section_name),
+						get_64symbol_type(symbol_table, tmp),
 						symbol_name
 					);
 				}
