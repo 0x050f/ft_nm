@@ -1,13 +1,33 @@
 #include "ft_nm.h"
 
 /*
+** Get allocated symbol structure from offset, symbol and name
+**
+** Returns NULL when malloc fail
+*/
+t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name) {
+	t_symbol32	*sym;
+
+	sym = malloc(sizeof(t_symbol32));
+	if (!sym)
+		return (NULL);
+	sym->offset = offset;
+	sym->symbol = symbol;
+	sym->name = name;
+	return (sym);
+}
+
+/*
 ** Print on stdout a single symbol using its offset, symbol character and name
 */
-void		print_32symbol(Elf32_Off offset, char symbol, char *string) {
-	if (!offset)
-		printf("%08c %c %s\n", ' ', symbol, string);
+void		print_symbol32(void *elem) {
+	t_symbol32	*sym;
+
+	sym = elem;
+	if (!sym->offset)
+		printf("%08c %c %s\n", ' ', sym->symbol, sym->name);
 	else
-		printf("%08lx %c %s\n", offset, symbol, string);
+		printf("%08lx %c %s\n", sym->offset, sym->symbol, sym->name);
 }
 
 /*

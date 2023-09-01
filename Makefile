@@ -8,6 +8,7 @@ DIR_OBJS	=	./compiled_srcs/
 SRCS		=	ft_nm.c \
 				check.c \
 				error.c \
+				lst.c \
 				32bits/handler.c \
 				32bits/section.c \
 				32bits/symbol.c \
