@@ -53,7 +53,7 @@ int			process_file(char *filename) {
 	}
 	if (munmap(addr, statbuf.st_size) == -1)
 		return (-ERR_ERRNO);
-	return (0);
+	return (ret);
 }
 
 int			main(int argc, char *argv[]) {
@@ -73,8 +73,9 @@ int			main(int argc, char *argv[]) {
 		ret = process_file(argv[i]);
 		if (ret < 0) {
 			error(argv[0], argv[i], -ret);
-			// Returns 1 on any error
-			result = 1;
+			// Returns 1 on error
+			if (ret != -ERR_NOSYMBOL)
+				result = 1;
 		}
 	}
 	return (result);

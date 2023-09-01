@@ -29,7 +29,7 @@ int			handle_elf64(void *addr, size_t size) {
 						lst_drop(&symbols, true);
 						return (-1);
 					}
-					if (!lst_add(&symbols, symbol)) {
+					if (!lst_prepend(&symbols, symbol)) {
 						free(symbol);
 						lst_drop(&symbols, true);
 						return (-1);
@@ -40,6 +40,9 @@ int			handle_elf64(void *addr, size_t size) {
 		}
 		index = get_next_idx_64section_by_type(addr, size, index + 1, SHT_SYMTAB);
 	}
+	if (!symbols)
+		return (-ERR_NOSYMBOL);
+	lst_sort(&symbols, cmp_symbol64);
 	lst_apply(symbols, print_symbol64);
 	lst_drop(&symbols, true);
 	return (0);

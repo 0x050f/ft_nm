@@ -18,6 +18,29 @@ t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name) {
 }
 
 /*
+** Compare 32bytes symbols
+*/
+int			cmp_symbol32(void *elem1, void *elem2) {
+	char *name1;
+	char *name2;
+
+	name1 = ((t_symbol32 *)elem1)->name;
+	name2 = ((t_symbol32 *)elem2)->name;
+	while (*name1 && *name2) {
+		// Ignores underscore
+		while (*name1 == '_')
+			name1++;
+		while (*name2 == '_')
+			name2++;
+		if (tolower(*name1) != tolower(*name2))
+			break ;
+		name1++;
+		name2++;
+	}
+	return (tolower(*name2) - tolower(*name1));
+}
+
+/*
 ** Print on stdout a single symbol using its offset, symbol character and name
 */
 void		print_symbol32(void *elem) {

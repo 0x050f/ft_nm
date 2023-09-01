@@ -1,6 +1,4 @@
-#include "ft_nm.h"
-
-/*
+#include "ft_nm.h"/*
 ** Get allocated symbol structure from offset, symbol and name
 **
 ** Returns NULL when malloc fail
@@ -16,6 +14,28 @@ t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name) {
 	sym->name = name;
 	return (sym);
 }
+/*
+** Compare 64bytes symbols
+*/
+int			cmp_symbol64(void *elem1, void *elem2) {
+	char *name1;
+	char *name2;
+
+	name1 = ((t_symbol64 *)elem1)->name;
+	name2 = ((t_symbol64 *)elem2)->name;
+	while (*name1 && *name2) {
+		// Ignores underscore
+		while (*name1 == '_')
+			name1++;
+		while (*name2 == '_')
+			name2++;
+		if (tolower(*name1) != tolower(*name2))
+			break ;
+		name1++;
+		name2++;
+	}
+	return (tolower(*name2) - tolower(*name1));
+}
 
 /*
 ** Print on stdout a single symbol using its offset, symbol character and name
@@ -25,9 +45,9 @@ void		print_symbol64(void *elem) {
 
 	sym = elem;
 	if (!sym->offset)
-		printf("%08c %c %s\n", ' ', sym->symbol, sym->name);
+		printf("%016c %c %s\n", ' ', sym->symbol, sym->name);
 	else
-		printf("%08lx %c %s\n", sym->offset, sym->symbol, sym->name);
+		printf("%016llx %c %s\n", sym->offset, sym->symbol, sym->name);
 }
 
 /*

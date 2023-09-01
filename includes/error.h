@@ -6,6 +6,7 @@ enum errors {
 	ERR_ERRNO		= 1,
 	ERR_NOFILE		= 2,
 	ERR_FORMAT		= 3,
+	ERR_NOSYMBOL	= 4,
 };
 
 void		error(char *prg_name, char *file, int errcode);

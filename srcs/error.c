@@ -4,7 +4,8 @@ static const char *error_table[] = {
 	[ERR_SUCCESS]		= "Success",
 	[ERR_ERRNO]			= "Errno is set to indicate the error",
 	[ERR_NOFILE]		= "No such file",
-	[ERR_FORMAT]		= "file format not recognized"
+	[ERR_FORMAT]		= "file format not recognized",
+	[ERR_NOSYMBOL]		= "no symbols"
 };
 
 void		error(char *prg_name, char *file, int errcode) {
