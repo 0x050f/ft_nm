@@ -70,6 +70,8 @@ int			main(int argc, char *argv[]) {
 		}
 	}
 	for (int i = 1; i < argc; i++) {
+		if (argc > 2)
+			printf("\n%s:\n", argv[i]);
 		ret = process_file(argv[i]);
 		if (ret < 0) {
 			error(argv[0], argv[i], -ret);
