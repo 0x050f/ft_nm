@@ -25,10 +25,15 @@ int			handle_elf64(void *addr, size_t size) {
 						get_64symbol_type(symbol_table, tmp),
 						symbol_name
 					);
-					if (!symbol) {}
-						// TODO
-					if (!lst_add(&symbols, symbol)) {}
-						// TODO
+					if (!symbol) {
+						lst_drop(&symbols, true);
+						return (-1);
+					}
+					if (!lst_add(&symbols, symbol)) {
+						free(symbol);
+						lst_drop(&symbols, true);
+						return (-1);
+					}
 				}
 			}
 			offset_symbol += section->sh_entsize;
