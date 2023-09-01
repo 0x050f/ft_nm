@@ -1,7 +1,6 @@
 #ifndef FT_NM_H
 # define FT_NM_H
 
-# include <ctype.h>
 # include <fcntl.h>
 # include <elf.h>
 # include <errno.h>
