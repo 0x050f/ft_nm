@@ -34,7 +34,7 @@ Elf64_Shdr	*get_64section_by_name(void *addr, size_t size, char *name) {
 			return (NULL);
 		section = (void *)(addr + header->e_shoff + header->e_shentsize * i);
 		if (shstr->sh_offset + section->sh_name < size &&
-			!strncmp(addr + shstr->sh_offset + section->sh_name, name, strlen(name) + 1))
+			!ft_strncmp(addr + shstr->sh_offset + section->sh_name, name, ft_strlen(name) + 1))
 			return (section);
 	}
 	return (NULL);

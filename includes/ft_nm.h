@@ -13,6 +13,7 @@
 # include <sys/stat.h>
 
 # include "error.h"
+# include "utils.h"
 
 typedef struct	s_symbol32 {
 	Elf32_Off	offset;

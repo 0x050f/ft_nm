@@ -32,12 +32,12 @@ int			cmp_symbol32(void *elem1, void *elem2) {
 			name1++;
 		while (*name2 == '_')
 			name2++;
-		if (tolower(*name1) != tolower(*name2))
+		if (ft_tolower(*name1) != ft_tolower(*name2))
 			break ;
 		name1++;
 		name2++;
 	}
-	return (tolower(*name2) - tolower(*name1));
+	return (ft_tolower(*name2) - ft_tolower(*name1));
 }
 
 /*
