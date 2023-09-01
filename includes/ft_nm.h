@@ -18,12 +18,14 @@ typedef struct	s_symbol32 {
 	Elf32_Off	offset;
 	char		symbol;
 	char		*name;
+	uint32_t	size;
 }				t_symbol32;
 
 typedef struct	s_symbol64 {
 	Elf64_Off	offset;
 	char		symbol;
 	char		*name;
+	uint64_t	size;
 }				t_symbol64;
 
 typedef struct		s_lst {
@@ -54,7 +56,7 @@ Elf32_Shdr	*get_32section_by_name(void *addr, size_t size, char *name);
 int			get_next_idx_32section_by_type(void *addr, size_t size, size_t from, Elf32_Word type);
 
 /* 32bits/symbol.c */
-t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name);
+t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name, uint32_t size);
 int			cmp_symbol32(void *elem1, void *elem2);
 void		print_symbol32(void *elem);
 char		*get_32symbol_name(void *addr, size_t size, Elf32_Sym *symbol_table);
@@ -70,7 +72,7 @@ Elf64_Shdr	*get_64section_by_name(void *addr, size_t size, char *name);
 int			get_next_idx_64section_by_type(void *addr, size_t size, size_t from, Elf64_Word type);
 
 /* 64bits/symbol.c */
-t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name);
+t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name, uint64_t size);
 int			cmp_symbol64(void *elem1, void *elem2);
 void		print_symbol64(void *elem);
 char		*get_64symbol_name(void *addr, size_t size, Elf64_Sym *symbol_table);

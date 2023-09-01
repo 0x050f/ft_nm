@@ -23,7 +23,8 @@ int			handle_elf64(void *addr, size_t size) {
 					t_symbol64 *symbol = get_symbol64(
 						symbol_table->st_value,
 						get_64symbol_type(symbol_table, tmp),
-						symbol_name
+						symbol_name,
+						symbol_table->st_size
 					);
 					if (!symbol) {
 						lst_drop(&symbols, true);

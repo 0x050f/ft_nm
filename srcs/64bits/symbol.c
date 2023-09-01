@@ -3,7 +3,7 @@
 **
 ** Returns NULL when malloc fail
 */
-t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name) {
+t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name, uint64_t size) {
 	t_symbol64	*sym;
 
 	sym = malloc(sizeof(t_symbol64));
@@ -12,6 +12,7 @@ t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name) {
 	sym->offset = offset;
 	sym->symbol = symbol;
 	sym->name = name;
+	sym->size = size;
 	return (sym);
 }
 /*
@@ -44,7 +45,7 @@ void		print_symbol64(void *elem) {
 	t_symbol64	*sym;
 
 	sym = elem;
-	if (!sym->offset)
+	if (!sym->offset && !sym->size)
 		printf("%016c %c %s\n", ' ', sym->symbol, sym->name);
 	else
 		printf("%016llx %c %s\n", sym->offset, sym->symbol, sym->name);

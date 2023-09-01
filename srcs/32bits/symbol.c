@@ -5,7 +5,7 @@
 **
 ** Returns NULL when malloc fail
 */
-t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name) {
+t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name, uint32_t size) {
 	t_symbol32	*sym;
 
 	sym = malloc(sizeof(t_symbol32));
@@ -14,6 +14,7 @@ t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name) {
 	sym->offset = offset;
 	sym->symbol = symbol;
 	sym->name = name;
+	sym->size = size;
 	return (sym);
 }
 
@@ -47,7 +48,7 @@ void		print_symbol32(void *elem) {
 	t_symbol32	*sym;
 
 	sym = elem;
-	if (!sym->offset)
+	if (!sym->offset && !sym->size)
 		printf("%08c %c %s\n", ' ', sym->symbol, sym->name);
 	else
 		printf("%08lx %c %s\n", sym->offset, sym->symbol, sym->name);
