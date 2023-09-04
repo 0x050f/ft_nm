@@ -41,6 +41,8 @@ int			handle_elf32(void *addr, size_t size) {
 		}
 		index = get_next_idx_32section_by_type(addr, size, index + 1, SHT_SYMTAB);
 	}
+	if (!symbols)
+		return (-ERR_NOSYMBOL);
 	lst_sort(&symbols, cmp_symbol32);
 	lst_apply(symbols, print_symbol32);
 	lst_drop(&symbols, true);
