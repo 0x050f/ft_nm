@@ -26,14 +26,20 @@ int			cmp_symbol64(void *elem1, void *elem2) {
 	name2 = ((t_symbol64 *)elem2)->name;
 	while (*name1 && *name2) {
 		// Ignores underscore
-		while (*name1 == '_')
+		while (*name1 == '_' || *name1 == '.' || *name1 == '@')
 			name1++;
-		while (*name2 == '_')
+		while (*name2 == '_' || *name2 == '.' || *name2 == '@')
 			name2++;
 		if (ft_tolower(*name1) != ft_tolower(*name2))
 			break ;
 		name1++;
 		name2++;
+	}
+	if (ft_tolower(*name2) - ft_tolower(*name1) == 0) {
+		if (!ft_strcmp(((t_symbol64 *)elem1)->name, ((t_symbol64 *)elem2)->name))
+			return ((t_symbol64 *)elem2)->offset - ((t_symbol64 *)elem1)->offset;
+		else
+			return (ft_strcmp(((t_symbol64 *)elem2)->name, ((t_symbol64 *)elem1)->name));
 	}
 	return (ft_tolower(*name2) - ft_tolower(*name1));
 }
@@ -45,7 +51,7 @@ void		print_symbol64(void *elem) {
 	t_symbol64	*sym;
 
 	sym = elem;
-	if (!sym->offset && !sym->size)
+	if ((!sym->offset && !sym->size) || sym->symbol == 'U')
 		printf("%016c %c %s\n", ' ', sym->symbol, sym->name);
 	else
 		printf("%016llx %c %s\n", sym->offset, sym->symbol, sym->name);
@@ -97,14 +103,14 @@ char		get_64symbol_type(Elf64_Sym *symbol_table, Elf64_Shdr *section) {
 	symbol = '?';
 	if (ELF64_ST_BIND(symbol_table->st_info) == STB_GNU_UNIQUE)
 		symbol = 'u';
-	else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK) {
-		symbol = 'W';
-		if (symbol_table->st_shndx == SHN_UNDEF)
-			symbol = 'w';
-	} else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK && ELF64_ST_TYPE(symbol_table->st_info) == STT_OBJECT) {
+	else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK && ELF64_ST_TYPE(symbol_table->st_info) == STT_OBJECT) {
 		symbol = 'V';
 		if (symbol_table->st_shndx == SHN_UNDEF)
 			symbol = 'v';
+	} else if (ELF64_ST_BIND(symbol_table->st_info) == STB_WEAK) {
+		symbol = 'W';
+		if (symbol_table->st_shndx == SHN_UNDEF)
+			symbol = 'w';
 	} else if (symbol_table->st_shndx == SHN_UNDEF)
 		symbol = 'U';
 	else if (symbol_table->st_shndx == SHN_ABS)
@@ -112,7 +118,7 @@ char		get_64symbol_type(Elf64_Sym *symbol_table, Elf64_Shdr *section) {
 	else if (symbol_table->st_shndx == SHN_COMMON)
 		symbol = 'C';
 	else if (section->sh_type == SHT_NOBITS
-			&& section->sh_flags == (SHF_ALLOC | SHF_WRITE))
+			&& section->sh_flags & SHF_ALLOC && section->sh_flags & SHF_WRITE)
 		symbol = 'B';
 	else if (section->sh_type == SHT_DYNAMIC)
 		symbol = 'D';

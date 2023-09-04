@@ -19,7 +19,7 @@ int			handle_elf32(void *addr, size_t size) {
 			if (symbol_table->st_name != 0) {
 				tmp = get_32section_by_index(addr, size, symbol_table->st_shndx);
 				symbol_name = get_32symbol_name(addr, size, symbol_table);
-				if (tmp && symbol_name) {
+				if (symbol_table->st_info != STT_FILE && symbol_name) {
 					t_symbol32 *symbol = get_symbol32(
 						symbol_table->st_value,
 						get_32symbol_type(symbol_table, tmp),

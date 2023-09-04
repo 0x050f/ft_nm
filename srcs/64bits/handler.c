@@ -19,7 +19,7 @@ int			handle_elf64(void *addr, size_t size) {
 			if (symbol_table->st_name != 0) {
 				tmp = get_64section_by_index(addr, size, symbol_table->st_shndx);
 				symbol_name = get_64symbol_name(addr, size, symbol_table);
-				if (tmp && symbol_name) {
+				if (symbol_table->st_info != STT_FILE && symbol_name) {
 					t_symbol64 *symbol = get_symbol64(
 						symbol_table->st_value,
 						get_64symbol_type(symbol_table, tmp),
@@ -30,7 +30,7 @@ int			handle_elf64(void *addr, size_t size) {
 						lst_drop(&symbols, true);
 						return (-1);
 					}
-					if (!lst_prepend(&symbols, symbol)) {
+					if (!lst_prepend(&symbols, symbol))  {
 						free(symbol);
 						lst_drop(&symbols, true);
 						return (-1);
@@ -46,5 +46,4 @@ int			handle_elf64(void *addr, size_t size) {
 	lst_sort(&symbols, cmp_symbol64);
 	lst_apply(symbols, print_symbol64);
 	lst_drop(&symbols, true);
-	return (0);
-}
+	return (0);}
