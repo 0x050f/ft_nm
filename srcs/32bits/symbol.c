@@ -54,7 +54,7 @@ void		print_symbol32(void *elem) {
 	t_symbol32	*sym;
 
 	sym = elem;
-	if ((!sym->offset && !sym->size) || sym->symbol == 'U')
+	if ((!sym->offset && !sym->size) || sym->symbol == 'U' || sym->symbol == 'w')
 		printf("%08c %c %s\n", ' ', sym->symbol, sym->name);
 	else
 		printf("%08lx %c %s\n", sym->offset, sym->symbol, sym->name);

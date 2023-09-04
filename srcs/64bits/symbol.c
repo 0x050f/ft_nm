@@ -26,9 +26,9 @@ int			cmp_symbol64(void *elem1, void *elem2) {
 	name2 = ((t_symbol64 *)elem2)->name;
 	while (*name1 && *name2) {
 		// Ignores underscore
-		while (*name1 == '_' || *name1 == '.' || *name1 == '@')
+		while (*name1 == '_' || *name1 == '.')
 			name1++;
-		while (*name2 == '_' || *name2 == '.' || *name2 == '@')
+		while (*name2 == '_' || *name2 == '.')
 			name2++;
 		if (ft_tolower(*name1) != ft_tolower(*name2))
 			break ;
@@ -51,7 +51,7 @@ void		print_symbol64(void *elem) {
 	t_symbol64	*sym;
 
 	sym = elem;
-	if ((!sym->offset && !sym->size) || sym->symbol == 'U')
+	if ((!sym->offset && !sym->size) || sym->symbol == 'U' || sym->symbol == 'w')
 		printf("%016c %c %s\n", ' ', sym->symbol, sym->name);
 	else
 		printf("%016llx %c %s\n", sym->offset, sym->symbol, sym->name);
