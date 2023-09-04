@@ -19,7 +19,7 @@ t_symbol32	*get_symbol32(Elf32_Off offset, char symbol, char *name, uint32_t siz
 }
 
 /*
-** Compare 32bytes symbols
+** Compare 32bytes symbols on LC_ALL=C
 */
 int			cmp_symbol32(void *elem1, void *elem2) {
 	char *name1;
@@ -27,24 +27,9 @@ int			cmp_symbol32(void *elem1, void *elem2) {
 
 	name1 = ((t_symbol32 *)elem1)->name;
 	name2 = ((t_symbol32 *)elem2)->name;
-	while (*name1 && *name2) {
-		// Ignores underscore
-		while (*name1 == '_' || *name1 == '.')
-			name1++;
-		while (*name2 == '_' || *name2 == '.')
-			name2++;
-		if (ft_tolower(*name1) != ft_tolower(*name2))
-			break ;
-		name1++;
-		name2++;
-	}
-	if (ft_tolower(*name2) - ft_tolower(*name1) == 0) {
-		if (!ft_strcmp(((t_symbol32 *)elem1)->name, ((t_symbol32 *)elem2)->name))
-			return ((t_symbol32 *)elem2)->offset - ((t_symbol32 *)elem1)->offset;
-		else
-			return (ft_strcmp(((t_symbol32 *)elem2)->name, ((t_symbol32 *)elem1)->name));
-	}
-	return (ft_tolower(*name2) - ft_tolower(*name1));
+	if (!ft_strcmp(name2, name1))
+		return ((t_symbol32 *)elem2)->offset - ((t_symbol32 *)elem1)->offset;
+	return (ft_strcmp(name2, name1));
 }
 
 /*

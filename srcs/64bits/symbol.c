@@ -16,7 +16,7 @@ t_symbol64	*get_symbol64(Elf64_Off offset, char symbol, char *name, uint64_t siz
 	return (sym);
 }
 /*
-** Compare 64bytes symbols
+** Compare 64bytes symbols on LC_ALL=C
 */
 int			cmp_symbol64(void *elem1, void *elem2) {
 	char *name1;
@@ -24,24 +24,9 @@ int			cmp_symbol64(void *elem1, void *elem2) {
 
 	name1 = ((t_symbol64 *)elem1)->name;
 	name2 = ((t_symbol64 *)elem2)->name;
-	while (*name1 && *name2) {
-		// Ignores underscore
-		while (*name1 == '_' || *name1 == '.')
-			name1++;
-		while (*name2 == '_' || *name2 == '.')
-			name2++;
-		if (ft_tolower(*name1) != ft_tolower(*name2))
-			break ;
-		name1++;
-		name2++;
-	}
-	if (ft_tolower(*name2) - ft_tolower(*name1) == 0) {
-		if (!ft_strcmp(((t_symbol64 *)elem1)->name, ((t_symbol64 *)elem2)->name))
-			return ((t_symbol64 *)elem2)->offset - ((t_symbol64 *)elem1)->offset;
-		else
-			return (ft_strcmp(((t_symbol64 *)elem2)->name, ((t_symbol64 *)elem1)->name));
-	}
-	return (ft_tolower(*name2) - ft_tolower(*name1));
+	if (!ft_strcmp(name2, name1))
+		return ((t_symbol64 *)elem2)->offset - ((t_symbol64 *)elem1)->offset;
+	return (ft_strcmp(name2, name1));
 }
 
 /*
